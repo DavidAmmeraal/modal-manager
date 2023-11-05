@@ -60,7 +60,7 @@ export function createModal<P extends {}, U = any>(
     component: function CreateModalHoc({ id }: CreateModalHocProps) {
       const { state, actions } = useHoCModal(id);
       const resolve = (value: U) => {
-        console.log("resolving the value with ", value);
+        actions.resolve(value);
       };
 
       if (!state.isMounted) return null;

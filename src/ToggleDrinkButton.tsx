@@ -1,15 +1,13 @@
 import { Button } from "@mui/material";
-import { useManagedModal } from "./modals";
+import { modalsApi } from "./modals";
 
 export const ToggleDrinkButton = () => {
-  const { show } = useManagedModal("drink");
-
   const handleClick = async () => {
-    const result = show({ drink: "🍺" });
+    modalsApi.show("drink", { drink: "🍺" });
   };
 
   return (
-    <Button variant="contained" onClick={() => show({ drink: "🍺" })}>
+    <Button variant="contained" onClick={handleClick}>
       Toggle drink modal
     </Button>
   );

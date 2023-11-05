@@ -3,21 +3,14 @@ import { useManagedModal } from "./modals";
 
 export const ToggleFoodButton = () => {
   const { show } = useManagedModal("food");
-  const { show: showDrink } = useManagedModal("drink");
 
   const handleClick = async () => {
-    const result = await show({ food: "🍞" });
+    const result = await show({ food: "🍕" });
+    console.log(result);
   };
 
   return (
-    <Button
-      variant="contained"
-      onClick={() =>
-        show({
-          food: "🍞",
-        })
-      }
-    >
+    <Button variant="contained" onClick={handleClick}>
       Toggle eat modal
     </Button>
   );

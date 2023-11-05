@@ -1,11 +1,13 @@
-import React, { JSXElementConstructor, useCallback } from "react";
+import React, { JSXElementConstructor, useCallback, useEffect } from "react";
 import { ModalResult, ModalsManager } from "../ModalsManager";
+import { createPublicApi } from "../publicApi";
 import { ReactModalDefinition } from "./createModal";
 import { ModalsManagerProvider } from "./ModalsManagerProvider";
 
 export class ReactModals<TModalsManager extends ModalsManager> {
+  public modalsApi = createPublicApi(this.manager);
   constructor(
-    public readonly manager: TModalsManager,
+    private readonly manager: TModalsManager,
     private readonly components: Map<string, JSXElementConstructor<any>>
   ) {}
 
@@ -50,7 +52,12 @@ export class ReactModals<TModalsManager extends ModalsManager> {
   };
 
   public useManagedModal = <TId extends keyof TModalsManager["registry"]>(
-    id: TId
+    id: TId,
+    {
+      removeOnUnmount = true,
+    }: {
+      removeOnUnmount?: boolean;
+    } = {}
   ) => {
     type ShowProps = ReturnType<TModalsManager["registry"][TId]["createProps"]>;
     type ResolveValue = ReturnType<
@@ -62,6 +69,14 @@ export class ReactModals<TModalsManager extends ModalsManager> {
       },
       [id]
     );
+
+    useEffect(() => {
+      return () => {
+        if (removeOnUnmount) {
+          this.manager.remove(id as string);
+        }
+      };
+    }, [id, removeOnUnmount]);
 
     return {
       show,

@@ -78,6 +78,7 @@ const showModal =
       [key: string]: unknown;
     }
   ) => {
+    console.log("showing modal ", id);
     update((state) => ({
       ...state,
       modals: {

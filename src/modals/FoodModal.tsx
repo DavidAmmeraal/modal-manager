@@ -13,7 +13,7 @@ type FoodModalProps = {
   food: string;
 };
 
-type Choice = number;
+type Choice = boolean;
 export const FoodModal = createModal<FoodModalProps, Choice>(
   function FoodModal({ isOpen, food, hide, remove, resolve }) {
     const choice = useRef<boolean>();
@@ -30,7 +30,7 @@ export const FoodModal = createModal<FoodModalProps, Choice>(
         TransitionProps={{
           onExited: () => {
             if (choice.current) {
-              resolve(1);
+              resolve(true);
             }
             remove();
           },

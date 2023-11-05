@@ -46,9 +46,7 @@ export class ModalsManager<
   ) {
     const existingPromiseDelegate = this.registry[id].promiseDelegate;
     if (existingPromiseDelegate) {
-      existingPromiseDelegate.reject(
-        "Modal was opened again before other was resolved!"
-      );
+      existingPromiseDelegate.resolve({ type: "CANCELLED" });
     }
     const delegate =
       promiseDelegate<

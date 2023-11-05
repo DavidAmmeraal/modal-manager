@@ -1,11 +1,12 @@
 import React, { JSXElementConstructor, useCallback, useEffect } from "react";
-import { ModalResult, ModalsManager } from "../ModalsManager";
+import { ModalResult } from "../modalResult";
+import { ModalsManager } from "../ModalsManager";
 import { createPublicApi } from "../publicApi";
 import { ReactModalDefinition } from "./createModal";
 import { ModalsManagerProvider } from "./ModalsManagerProvider";
 
 export class ReactModals<TModalsManager extends ModalsManager> {
-  public modalsApi = createPublicApi(this.manager);
+  public modals = createPublicApi(this.manager);
   constructor(
     private readonly manager: TModalsManager,
     private readonly components: Map<string, JSXElementConstructor<any>>
@@ -41,7 +42,7 @@ export class ReactModals<TModalsManager extends ModalsManager> {
     );
   };
 
-  public Modals = () => {
+  public ModalsComponent = () => {
     return (
       <>
         {Array.from(this.components.entries()).map(([id, Component]) => {

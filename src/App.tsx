@@ -1,5 +1,5 @@
 import "./App.css";
-import { Modals, ModalsProvider } from "./modals";
+import { ModalsComponent, ModalsProvider } from "./modals";
 import { ToggleDrinkButton } from "./ToggleDrinkButton";
 import { ToggleFoodButton } from "./ToggleFoodButton";
 
@@ -9,7 +9,7 @@ function App() {
       <ModalsProvider>
         <ToggleFoodButton />
         <ToggleDrinkButton />
-        <Modals />
+        <ModalsComponent />
       </ModalsProvider>
     </div>
   );

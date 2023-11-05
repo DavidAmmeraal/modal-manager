@@ -29,8 +29,9 @@ export const FoodModal = createModal<FoodModalProps, Choice>(
         aria-describedby="alert-dialog-description"
         TransitionProps={{
           onExited: () => {
-            if (choice.current) {
-              resolve(true);
+            if (choice.current !== undefined) {
+              console.log("resolving with", choice.current);
+              resolve(choice.current);
             }
             remove();
           },

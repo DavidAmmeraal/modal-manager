@@ -1,16 +1,12 @@
+import {
+  createCancelledResult,
+  createCompletedResult,
+  ModalResult,
+} from "./modalResult";
 import { createModalsStore } from "./modalsStore";
 import { promiseDelegate, PromiseDelegate } from "./promiseDelegate";
 
 export type Simplify<T> = { [KeyType in keyof T]: T[KeyType] };
-
-export type ModalResult<T = any> =
-  | {
-      type: "COMPLETE";
-      value: T;
-    }
-  | {
-      type: "CANCELLED";
-    };
 
 export type ModalDefinition = {
   createProps: (...args: any[]) => {
@@ -46,7 +42,7 @@ export class ModalsManager<
   ) {
     const existingPromiseDelegate = this.registry[id].promiseDelegate;
     if (existingPromiseDelegate) {
-      existingPromiseDelegate.resolve({ type: "CANCELLED" });
+      existingPromiseDelegate.resolve(createCancelledResult());
     }
     const delegate =
       promiseDelegate<
@@ -66,7 +62,7 @@ export class ModalsManager<
   public remove<TId extends keyof ModalsRegistry>(id: TId) {
     const existingPromiseDelegate = this.registry[id].promiseDelegate;
     if (existingPromiseDelegate) {
-      existingPromiseDelegate.resolve({ type: "CANCELLED" });
+      existingPromiseDelegate.resolve(createCancelledResult());
       this.registry[id].promiseDelegate = undefined;
     }
     this.store.actions.removeModal(id as string);
@@ -75,7 +71,7 @@ export class ModalsManager<
   public resolve<TId extends keyof ModalsRegistry>(id: TId, value: unknown) {
     const delegate = this.registry[id].promiseDelegate;
     if (delegate) {
-      delegate.resolve({ type: "COMPLETE", value });
+      delegate.resolve(createCompletedResult(value));
       this.registry[id].promiseDelegate = undefined;
     }
   }

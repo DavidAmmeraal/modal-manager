@@ -1,0 +1,21 @@
+{
+  "name": "@modal-manager/react",
+  "version": "0.0.1",
+  "module": "dist/esm/index.js",
+  "main": "dist/cjs/index.js",
+  "scripts": {
+    "compile:cjs": "tsc --module commonjs --outDir ./dist/cjs",
+    "compile:es": "tsc --module esnext --outDir ./dist/esm",
+    "compile": "yarn run compile:cjs && yarn run compile:es",
+    "lint": "eslint --ext .ts,.tsx src"
+  },
+  "dependencies": {
+    "@modal-manager/core": "^0.0.1",
+    "@types/react": "^18.2.35",
+    "react": "^16.8.0",
+    "use-sync-external-store": "^1.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.53.0"
+  }
+}

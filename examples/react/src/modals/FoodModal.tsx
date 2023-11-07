@@ -5,22 +5,22 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-} from "@mui/material";
-import { useRef } from "react";
-import { createModal } from "@modal-manager/react";
+} from '@mui/material'
+import { useRef } from 'react'
+import { createModal } from '@modal-manager/react'
 
 type FoodModalProps = {
-  food: string;
-};
+  food: string
+}
 
-type Choice = boolean;
+type Choice = boolean
 export const FoodModal = createModal<FoodModalProps, Choice>(
-  function FoodModal({ isOpen, food, hide, remove, resolve }) {
-    const choice = useRef<boolean>();
+  function FoodModal({ food, modal: { isOpen, hide, resolve, remove } }) {
+    const choice = useRef<boolean>()
     const handleChoice = (value: boolean) => () => {
-      choice.current = value;
-      hide();
-    };
+      choice.current = value
+      hide()
+    }
     return (
       <Dialog
         open={isOpen}
@@ -30,10 +30,10 @@ export const FoodModal = createModal<FoodModalProps, Choice>(
         TransitionProps={{
           onExited: () => {
             if (choice.current !== undefined) {
-              console.log("resolving with", choice.current);
-              resolve(choice.current);
+              console.log('resolving with', choice.current)
+              resolve(choice.current)
             }
-            remove();
+            remove()
           },
         }}
       >
@@ -50,6 +50,6 @@ export const FoodModal = createModal<FoodModalProps, Choice>(
           </Button>
         </DialogActions>
       </Dialog>
-    );
-  }
-);
+    )
+  },
+)

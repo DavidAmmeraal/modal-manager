@@ -1,15 +1,15 @@
-import { type ModalsManager } from "@modal-manager/core";
-import { createContext, useContext } from "react";
+import { type ModalsManager } from '@modal-manager/core'
+import { createContext, useContext } from 'react'
 
 type ModalsManagerContextValue = {
-  manager: ModalsManager;
-};
+  manager: ModalsManager
+}
 
 const ModalsManagerContext = createContext<
   ModalsManagerContextValue | undefined
->(undefined);
+>(undefined)
 
-type ModalsProviderProps = React.PropsWithChildren<{ manager: ModalsManager }>;
+type ModalsProviderProps = React.PropsWithChildren<{ manager: ModalsManager }>
 
 export function ModalsManagerProvider({
   manager,
@@ -19,13 +19,13 @@ export function ModalsManagerProvider({
     <ModalsManagerContext.Provider value={{ manager }}>
       {children}
     </ModalsManagerContext.Provider>
-  );
+  )
 }
 
 export function useModalsManager() {
-  const context = useContext(ModalsManagerContext);
-  if (!context) {
-    throw new Error("useModalsManager must be used within a ModalsProvider");
+  const context = useContext(ModalsManagerContext)
+  if (!context?.manager) {
+    throw new Error('useModalsManager must be used within a ModalsProvider')
   }
-  return context.manager;
+  return context.manager
 }

@@ -2,69 +2,84 @@ import {
   createCancelledResult,
   createCompletedResult,
   ModalResult,
-} from "./modalResult";
-import { promiseDelegate, PromiseDelegate } from "./promiseDelegate";
+} from './modalResult'
+import { promiseDelegate, PromiseDelegate } from './promiseDelegate'
 
 type ModalsState = {
   modals: {
     [key: string]: {
       props: {
-        [key: string]: unknown;
-      };
-      isOpen: boolean;
-      isMounted: boolean;
-    };
-  };
+        [key: string]: unknown
+      }
+      isOpen: boolean
+      isMounted: boolean
+    }
+  }
   promises: {
-    [key: string]: PromiseDelegate<ModalResult>;
-  };
-};
+    [key: string]: PromiseDelegate<ModalResult>
+  }
+}
 
-type Update = (updater: Updater) => void;
-type Updater = (state: ModalsState) => ModalsState;
-export type ModalsStore = ReturnType<typeof createModalsStore>;
+type Update = (updater: Updater) => void
+type Updater = (state: ModalsState) => ModalsState
+export type ModalsStore = ReturnType<typeof createModalsStore>
 
 const createDefaultState = (): ModalsState => ({
   modals: {},
   promises: {},
-});
+})
 
 export function createModalsStore() {
-  let state: ModalsState = createDefaultState();
-  const listeners = new Set<() => void>();
+  let state: ModalsState = createDefaultState()
+  const listeners = new Set<() => void>()
 
   const emit = () => {
-    listeners.forEach((listener) => listener());
-  };
+    listeners.forEach(listener => listener())
+  }
 
   const update = (updater: Updater) => {
-    const newState = updater(state);
+    const newState = updater(state)
     if (newState !== state) {
-      state = newState;
-      emit();
+      state = newState
+      emit()
     }
-  };
+  }
 
   const subscribe = (listener: () => void) => {
-    listeners.add(listener);
+    listeners.add(listener)
 
     return () => {
-      listeners.delete(listener);
-    };
-  };
+      listeners.delete(listener)
+    }
+  }
 
   return {
     subscribe,
     getState() {
-      return state;
+      return state
     },
     actions: {
+      registerModal: registerModal(update),
       showModal: showModal(update),
       hideModal: hideModal(update),
       removeModal: removeModal(update),
       resolveModal: resolveModal(update),
     },
-  };
+  }
+}
+
+const registerModal = (update: Update) => (id: string) => {
+  update(state => ({
+    ...state,
+    modals: {
+      ...state.modals,
+      [id]: {
+        props: {},
+        isOpen: false,
+        isMounted: false,
+      },
+    },
+  }))
 }
 
 const showModal =
@@ -72,12 +87,12 @@ const showModal =
   (
     id: string,
     props: {
-      [key: string]: unknown;
-    }
+      [key: string]: unknown
+    },
   ) => {
-    update((state) => {
-      const promise = state.promises[id];
-      if (promise) promise.resolve(createCancelledResult());
+    update(state => {
+      const promise = state.promises[id]
+      if (promise) promise.resolve(createCancelledResult())
       return {
         ...state,
         modals: {
@@ -92,12 +107,12 @@ const showModal =
           ...state.promises,
           [id]: promiseDelegate(),
         },
-      };
-    });
-  };
+      }
+    })
+  }
 
 const hideModal = (update: Update) => (id: string) => {
-  update((state) => ({
+  update(state => ({
     ...state,
     modals: {
       ...state.modals,
@@ -106,13 +121,13 @@ const hideModal = (update: Update) => (id: string) => {
         isOpen: false,
       },
     },
-  }));
-};
+  }))
+}
 
 const removeModal = (update: Update) => (id: string) => {
-  update((state) => {
-    const { [id]: promise, ...promises } = state.promises;
-    promise.resolve(createCancelledResult());
+  update(state => {
+    const { [id]: promise, ...promises } = state.promises
+    if (promise) promise.resolve(createCancelledResult())
     return {
       ...state,
       modals: {
@@ -124,17 +139,17 @@ const removeModal = (update: Update) => (id: string) => {
         },
       },
       promises,
-    };
-  });
-};
+    }
+  })
+}
 
 const resolveModal = (update: Update) => (id: string, value: unknown) => {
-  update((state) => {
-    const { [id]: promise, ...promises } = state.promises;
-    promise.resolve(createCompletedResult(value));
+  update(state => {
+    const { [id]: promise, ...promises } = state.promises
+    promise.resolve(createCompletedResult(value))
     return {
       ...state,
       promises: { ...promises },
-    };
-  });
-};
+    }
+  })
+}

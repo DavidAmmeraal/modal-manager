@@ -1,4 +1,4 @@
-import { createModal } from "@modal-manager/react";
+import { createModal } from '@modal-manager/react'
 import {
   Button,
   Dialog,
@@ -6,14 +6,13 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-} from "@mui/material";
+} from '@mui/material'
 
 export const DrinkModal = createModal<{ drink: string }>(function FoodModal({
-  isOpen,
   drink,
-  hide,
+  modal: { isOpen, hide },
 }) {
-  console.log("rendering the drink modal");
+  console.log('rendering the drink modal', isOpen, hide)
   return (
     <Dialog
       open={isOpen}
@@ -34,5 +33,5 @@ export const DrinkModal = createModal<{ drink: string }>(function FoodModal({
         </Button>
       </DialogActions>
     </Dialog>
-  );
-});
+  )
+})

@@ -6,7 +6,8 @@
     "typescript": "^5.2.2"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "examples/*"
   ],
   "scripts": {
     "compile": "yarn workspaces foreach -A run compile"

@@ -19,10 +19,8 @@ type ModalEntry = {
   }
 }
 
-type ModalsState = {
-  [key: string]: ModalEntry
-}
-const createDefaultState = (): ModalsState => ({})
+type ModalsMap = Record<string, ModalEntry>
+const createDefaultState = (): ModalsMap => ({})
 const createDefaultModalEntry = (): ModalEntry => ({
   state: {
     props: {},
@@ -33,15 +31,13 @@ const createDefaultModalEntry = (): ModalEntry => ({
 })
 
 export class ModalsStore {
-  constructor(
-    private _state: ModalsState = createDefaultState(),
-    private listeners: Set<() => void> = new Set(),
-  ) {}
+  private _map: ModalsMap = createDefaultState()
+  private listeners: Set<() => void> = new Set()
 
-  #update(update: (state: ModalsState) => ModalsState) {
-    const newState = update(this._state)
-    if (newState !== this._state) {
-      this._state = newState
+  #update(update: (state: ModalsMap) => ModalsMap) {
+    const newMap = update(this._map)
+    if (newMap !== this._map) {
+      this._map = newMap
       this.#emit()
     }
   }
@@ -50,11 +46,11 @@ export class ModalsStore {
   }
 
   #getOpenPromise(id: string) {
-    return this._state[id].promises.open
+    return this._map[id].promises.open
   }
 
   #getClosePromise(id: string) {
-    return this._state[id].promises.close
+    return this._map[id].promises.close
   }
 
   subscribe = (listener: () => void) => {
@@ -65,8 +61,8 @@ export class ModalsStore {
     }
   }
 
-  getState = () => {
-    return this._state
+  getModalState = (id: string) => {
+    return this._map[id].state
   }
 
   register = (id: string) => {

@@ -4,9 +4,8 @@ import { useModalsStore } from '../ModalsStoreProvider'
 export function useCreatedModal(id: string) {
   const store = useModalsStore()
 
-  const modalState = useSyncExternalStore(
-    store.subscribe,
-    () => store.getState()[id].state,
+  const modalState = useSyncExternalStore(store.subscribe, () =>
+    store.getModalState(id),
   )
 
   const actions = useMemo(() => {

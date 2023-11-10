@@ -1,4 +1,4 @@
-import { type ModalsStore } from '@modal-manager/core'
+import { ModalsStore } from '@modal-manager/core'
 import { createContext, useContext } from 'react'
 
 const ModalsStoreContext = createContext<ModalsStore | undefined>(undefined)

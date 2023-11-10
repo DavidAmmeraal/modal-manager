@@ -1,6 +1,6 @@
+import { ModalResult, ModalsStore } from '@modal-manager/core'
 import React, { useCallback, useEffect } from 'react'
 
-import { ModalResult, ModalsStore } from '@modal-manager/core'
 import { ModalComponent } from './createModal/createModal'
 import { ModalsStoreProvider } from './ModalsStoreProvider'
 

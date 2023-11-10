@@ -1,18 +1,26 @@
-import { ModalsComponent, ModalsProvider } from "./modals";
-import { ToggleDrinkButton } from "./ToggleDrinkButton";
-import { ToggleFoodButton } from "./ToggleFoodButton";
-import "./App.css";
+import { ModalsComponent, ModalsProvider } from './modals'
+import './App.css'
+import React, { useEffect } from 'react'
+import { TogglePersistentModal } from './TogglePersistentModal'
 
 function App() {
+  const [shouldShowTogglePersistentModal, setShouldShowTogglePersistentModal] =
+    React.useState(true)
+
+  useEffect(() => {
+    setTimeout(() => {
+      setShouldShowTogglePersistentModal(false)
+    }, 10000)
+  })
+
   return (
     <div>
       <ModalsProvider>
-        <ToggleFoodButton />
-        <ToggleDrinkButton />
+        {shouldShowTogglePersistentModal && <TogglePersistentModal />}
         <ModalsComponent />
       </ModalsProvider>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

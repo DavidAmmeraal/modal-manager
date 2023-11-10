@@ -5,151 +5,182 @@ import {
 } from './modalResult'
 import { promiseDelegate, PromiseDelegate } from './promiseDelegate'
 
-type ModalsState = {
-  modals: {
-    [key: string]: {
-      props: {
-        [key: string]: unknown
-      }
-      isOpen: boolean
-      isMounted: boolean
+type ModalEntry = {
+  state: {
+    props: {
+      [key: string]: unknown
     }
+    isOpen: boolean
+    isMounted: boolean
   }
   promises: {
-    [key: string]: PromiseDelegate<ModalResult>
+    open?: PromiseDelegate<ModalResult>
+    close?: PromiseDelegate
   }
 }
 
-type Update = (updater: Updater) => void
-type Updater = (state: ModalsState) => ModalsState
-export type ModalsStore = ReturnType<typeof createModalsStore>
-
-const createDefaultState = (): ModalsState => ({
-  modals: {},
+type ModalsState = {
+  [key: string]: ModalEntry
+}
+const createDefaultState = (): ModalsState => ({})
+const createDefaultModalEntry = (): ModalEntry => ({
+  state: {
+    props: {},
+    isOpen: false,
+    isMounted: false,
+  },
   promises: {},
 })
 
-export function createModalsStore() {
-  let state: ModalsState = createDefaultState()
-  const listeners = new Set<() => void>()
+export class ModalsStore {
+  constructor(
+    private _state: ModalsState = createDefaultState(),
+    private listeners: Set<() => void> = new Set(),
+  ) {}
 
-  const emit = () => {
-    listeners.forEach(listener => listener())
-  }
-
-  const update = (updater: Updater) => {
-    const newState = updater(state)
-    if (newState !== state) {
-      state = newState
-      emit()
+  #update(update: (state: ModalsState) => ModalsState) {
+    const newState = update(this._state)
+    if (newState !== this._state) {
+      this._state = newState
+      this.#emit()
     }
   }
+  #emit() {
+    this.listeners.forEach(listener => listener())
+  }
 
-  const subscribe = (listener: () => void) => {
-    listeners.add(listener)
+  #getOpenPromise(id: string) {
+    return this._state[id].promises.open
+  }
+
+  #getClosePromise(id: string) {
+    return this._state[id].promises.close
+  }
+
+  subscribe = (listener: () => void) => {
+    this.listeners.add(listener)
 
     return () => {
-      listeners.delete(listener)
+      this.listeners.delete(listener)
     }
   }
 
-  return {
-    subscribe,
-    getState() {
-      return state
-    },
-    actions: {
-      registerModal: registerModal(update),
-      showModal: showModal(update),
-      hideModal: hideModal(update),
-      removeModal: removeModal(update),
-      resolveModal: resolveModal(update),
-    },
+  getState = () => {
+    return this._state
   }
-}
 
-const registerModal = (update: Update) => (id: string) => {
-  update(state => ({
-    ...state,
-    modals: {
-      ...state.modals,
-      [id]: {
-        props: {},
-        isOpen: false,
-        isMounted: false,
-      },
-    },
-  }))
-}
-
-const showModal =
-  (update: Update) =>
-  (
-    id: string,
-    props: {
-      [key: string]: unknown
-    },
-  ) => {
-    update(state => {
-      const promise = state.promises[id]
-      if (promise) promise.resolve(createCancelledResult())
+  register = (id: string) => {
+    this.#update(state => {
       return {
         ...state,
-        modals: {
-          ...state.modals,
-          [id]: {
+        [id]: createDefaultModalEntry(),
+      }
+    })
+  }
+
+  open = (id: string, props: Record<string, unknown>) => {
+    // This shouldn't really occur, but if a modal is already open, we should cancel the pending promise.
+    const delegate = this.#getOpenPromise(id) || promiseDelegate<ModalResult>()
+    this.#update(state => {
+      return {
+        ...state,
+        [id]: {
+          state: {
             props,
             isOpen: true,
             isMounted: true,
           },
+          promises: {
+            open: delegate,
+          },
         },
-        promises: {
-          ...state.promises,
-          [id]: promiseDelegate(),
+      }
+    })
+    return delegate.promise
+  }
+
+  hide = (id: string) => {
+    this.#update(state => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          state: { ...state[id].state, isOpen: false },
         },
       }
     })
   }
 
-const hideModal = (update: Update) => (id: string) => {
-  update(state => ({
-    ...state,
-    modals: {
-      ...state.modals,
-      [id]: {
-        ...state.modals[id],
-        isOpen: false,
-      },
-    },
-  }))
-}
-
-const removeModal = (update: Update) => (id: string) => {
-  update(state => {
-    const { [id]: promise, ...promises } = state.promises
-    if (promise) promise.resolve(createCancelledResult())
-    return {
-      ...state,
-      modals: {
-        ...state.modals,
+  close = (id: string) => {
+    const delegate = this.#getClosePromise(id) || promiseDelegate()
+    this.#update(state => {
+      return {
+        ...state,
         [id]: {
-          ...state.modals[id],
-          isOpen: false,
-          isMounted: false,
+          ...state[id],
+          state: {
+            ...state[id].state,
+            isOpen: false,
+          },
+          promises: {
+            ...state[id].promises,
+            close: delegate,
+          },
         },
-      },
-      promises,
-    }
-  })
-}
+      }
+    })
+    return delegate.promise
+  }
 
-const resolveModal = (update: Update) => (id: string, value: unknown) => {
-  update(state => {
-    const { [id]: promise, ...promises } = state.promises
+  resolve = (id: string, value: unknown) => {
+    const promise = this.#getOpenPromise(id)
+    if (!promise) throw new Error(`No open promise for modal ${id}`)
     promise.resolve(createCompletedResult(value))
-    return {
-      ...state,
-      promises: { ...promises },
-    }
-  })
+    this.#update(state => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          promises: {
+            ...state[id].promises,
+            open: undefined,
+          },
+        },
+      }
+    })
+  }
+
+  cancel = (id: string) => {
+    const promise = this.#getOpenPromise(id)
+    promise?.resolve(createCancelledResult())
+    this.#update(state => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          promises: {
+            ...state[id].promises,
+            open: undefined,
+          },
+        },
+      }
+    })
+  }
+
+  remove = (id: string) => {
+    this.#update(state => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          state: {
+            ...state[id].state,
+            isMounted: false,
+          },
+        },
+      }
+    })
+    this.#getOpenPromise(id)?.resolve(createCancelledResult())
+    this.#getClosePromise(id)?.resolve(undefined)
+  }
 }

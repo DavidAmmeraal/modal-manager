@@ -1,50 +1,25 @@
-import React, { useMemo, useSyncExternalStore } from 'react'
-import { useModalsManager } from './ModalsManagerProvider'
+import React from 'react'
+import { useCreatedModal } from './useCreatedModal'
 
 export interface CreateModalHocProps {
   id: string
 }
 
+type ResolveFunction<T = undefined> = [T] extends [undefined]
+  ? () => void
+  : (value: T) => void
+
 /**
  * These props will be injected into the component wrapped by `createModal`.
  */
-export interface InjectedModalProps<T = never> {
+export type InjectedModalProps<T = undefined> = {
   modal: {
     isOpen: boolean
     hide: () => void
     remove: () => void
-    resolve: (value: T) => void
+    resolve: ResolveFunction<T>
+    cancel: () => void
   }
-}
-
-function useHoCModal(id: string) {
-  const manager = useModalsManager()
-
-  const modalState = useSyncExternalStore(
-    manager.store.subscribe,
-    () => manager.store.getState().modals[id],
-  )
-
-  const actions = useMemo(() => {
-    return {
-      hide: () => {
-        manager.hide(id)
-      },
-      remove: () => {
-        manager.remove(id)
-      },
-      resolve: (value: unknown) => {
-        manager.resolve(id, value)
-      },
-    }
-  }, [id, manager])
-
-  return useMemo(() => {
-    return {
-      state: modalState,
-      actions,
-    }
-  }, [modalState, actions])
 }
 
 // We use the generic type to infer the props and the result of the modal, they are not actually being used by
@@ -53,17 +28,14 @@ export type ModalComponent<
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   T extends Record<string, unknown> = Record<string, unknown>,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  U = unknown,
+  U = undefined,
 > = React.ComponentType<{ id: string }>
 
-export function createModal<P extends Record<string, unknown>, U = unknown>(
+export function createModal<P extends Record<string, unknown>, U = undefined>(
   Comp: React.ComponentType<P & InjectedModalProps<U>>,
 ): ModalComponent<P, U> {
   return function CreateModalHoc({ id }: CreateModalHocProps) {
-    const { state, actions } = useHoCModal(id)
-    const resolve = (value: U) => {
-      actions.resolve(value)
-    }
+    const { state, actions } = useCreatedModal(id)
 
     if (!state.isMounted) return null
 
@@ -74,7 +46,8 @@ export function createModal<P extends Record<string, unknown>, U = unknown>(
           isOpen: state.isOpen,
           hide: actions.hide,
           remove: actions.remove,
-          resolve,
+          cancel: actions.cancel,
+          resolve: actions.resolve,
         }}
       />
     )

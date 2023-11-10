@@ -1,4 +1,4 @@
-import { ModalsManager } from "./ModalsManager";
-import type { ModalResult } from "./modalResult";
+import type { ModalResult } from './modalResult'
+import { ModalsStore } from './ModalsStore'
 
-export { ModalsManager, ModalResult };
+export { ModalsStore, ModalResult }

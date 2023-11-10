@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect } from 'react'
 
-import { ModalResult, ModalsManager } from '@modal-manager/core'
-import { ModalComponent } from './createModal'
-import { ModalsManagerProvider } from './ModalsManagerProvider'
+import { ModalResult, ModalsStore } from '@modal-manager/core'
+import { ModalComponent } from './createModal/createModal'
+import { ModalsStoreProvider } from './ModalsStoreProvider'
 
 type ComponentsMap = Record<string, ModalComponent>
 
@@ -15,9 +15,26 @@ type PropsAndResult<
 
 export class ReactModals<T extends ComponentsMap | undefined = undefined> {
   constructor(
-    private readonly manager: ModalsManager,
+    private readonly store: ModalsStore,
     private components: T = undefined as T,
-  ) {}
+  ) {
+    if (components) {
+      this.registerModals(components)
+    }
+  }
+
+  public registerModals<TNewMap extends ComponentsMap>(map: TNewMap) {
+    this.components = {
+      ...this.components,
+      ...map,
+    }
+    Object.keys(map).forEach(id => {
+      this.store.register(id)
+    })
+    return this as unknown as ReactModals<
+      T extends undefined ? TNewMap : T & TNewMap
+    >
+  }
 
   public registerModal<Id extends string, Component extends ModalComponent>(
     id: Id,
@@ -27,7 +44,7 @@ export class ReactModals<T extends ComponentsMap | undefined = undefined> {
       ...this.components,
       [id]: component,
     }
-    this.manager.register(id)
+    this.store.register(id)
     return this as unknown as ReactModals<
       T extends undefined
         ? { [k in Id]: Component }
@@ -37,9 +54,7 @@ export class ReactModals<T extends ComponentsMap | undefined = undefined> {
 
   public ModalsProvider = ({ children }: React.PropsWithChildren) => {
     return (
-      <ModalsManagerProvider manager={this.manager}>
-        {children}
-      </ModalsManagerProvider>
+      <ModalsStoreProvider store={this.store}>{children}</ModalsStoreProvider>
     )
   }
 
@@ -56,30 +71,31 @@ export class ReactModals<T extends ComponentsMap | undefined = undefined> {
   public useManagedModal = <TId extends keyof T>(
     id: TId,
     {
-      removeOnUnmount = true,
+      autoUnmount = true,
     }: {
-      removeOnUnmount?: boolean
+      /**
+       * If true, the modal will be unmounted when the invoking component is dismounted.
+       */
+      autoUnmount?: boolean
     } = {},
   ) => {
-    type PropsAndResult = T[TId] extends ModalComponent<infer P, infer U>
-      ? [props: P, result: U]
-      : never
+    type ShowProps = PropsAndResult<T, TId>[0]
+    type ResultValue = PropsAndResult<T, TId>[1]
+
     const show = useCallback(
-      (props: PropsAndResult[0]): ModalResult<PropsAndResult[1]> => {
-        return this.manager.show(id as string, props) as unknown as ModalResult<
-          PropsAndResult[1]
-        >
+      (props: ShowProps): Promise<ModalResult<ResultValue>> => {
+        return this.store.open(id as string, props) as never
       },
       [id],
     )
 
     useEffect(() => {
       return () => {
-        if (removeOnUnmount) {
-          this.manager.remove(id as string)
+        if (autoUnmount) {
+          this.store.remove(id as string)
         }
       }
-    }, [id, removeOnUnmount])
+    }, [id])
 
     return {
       show,
@@ -87,25 +103,25 @@ export class ReactModals<T extends ComponentsMap | undefined = undefined> {
   }
 
   public ReactModalManager = (() => {
-    const manager = this.manager
+    const store = this.store
     return {
-      show<TId extends keyof T>(
+      open: <TId extends keyof T>(
         id: TId,
         props: PropsAndResult<T, TId>[0],
-      ): ModalResult<PropsAndResult<T, TId>[1]> {
-        return manager.show(id as string, props) as unknown as ModalResult<
-          PropsAndResult<T, TId>[1]
-        >
+      ): Promise<ModalResult<PropsAndResult<T, TId>[1]>> => {
+        return store.open(id as string, props) as never
       },
-      hide<TId extends keyof T>(id: TId) {
-        return manager.hide(id as string)
+      close: <TId extends keyof T>(id: TId): Promise<void> => {
+        return store.close(id as string) as never
       },
     }
   })()
 }
 
-export function createReactModals() {
-  const manager = new ModalsManager()
+export function createReactModals<
+  T extends ComponentsMap | undefined = undefined,
+>(modalsMap: T) {
+  const store = new ModalsStore()
 
-  return new ReactModals(manager)
+  return new ReactModals(store, modalsMap)
 }

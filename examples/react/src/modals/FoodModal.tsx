@@ -30,7 +30,6 @@ export const FoodModal = createModal<FoodModalProps, Choice>(
         TransitionProps={{
           onExited: () => {
             if (choice.current !== undefined) {
-              console.log('resolving with', choice.current)
               resolve(choice.current)
             }
             remove()

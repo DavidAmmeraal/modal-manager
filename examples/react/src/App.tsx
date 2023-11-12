@@ -2,16 +2,10 @@ import { ModalsComponent, ModalsProvider, openModal } from './modals'
 import './App.css'
 import { TogglePersistentModal } from './TogglePersistentModal'
 import { Button } from '@mui/material'
-import { ConfirmDialog } from './modals/ConfirmDialog'
 
 function App() {
-  const handleClick = () => {
-    openModal(ConfirmDialog, {
-      title: 'Confirm',
-      content: (
-        <>This was triggered through `openModal`, would you like to continue?</>
-      ),
-    })
+  const handleClick = async () => {
+    openModal('confirm', { title: 'Confirm', content: 'hi' })
   }
 
   return (

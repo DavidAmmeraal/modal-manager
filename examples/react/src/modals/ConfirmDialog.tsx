@@ -8,19 +8,19 @@ import {
   DialogTitle,
 } from '@mui/material'
 
-type ConfirmDialog = {
+export type ConfirmDialogProps = {
   title: React.ReactNode
   content: React.ReactNode
 }
 
-export const ConfirmDialog = createModal<ConfirmDialog>(
+export const ConfirmDialog = createModal<ConfirmDialogProps, boolean>(
   function PersistentModal({
     title,
     content,
     modal: { isOpen, close, resolve, remove },
   }) {
     const finish = (result: boolean) => () => {
-      if (result) resolve()
+      if (result) resolve(result)
       close()
     }
 

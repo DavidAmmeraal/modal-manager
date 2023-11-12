@@ -5,7 +5,8 @@ export const {
   ModalsProvider,
   ModalsComponent,
   useManagedModal,
-  ReactModalManager,
+  openModal,
+  closeModal,
 } = createReactModals({
   confirm: ConfirmDialog,
 })

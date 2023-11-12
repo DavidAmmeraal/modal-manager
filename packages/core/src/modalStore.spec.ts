@@ -36,22 +36,11 @@ describe('modalStore', () => {
     })
   })
 
-  it('should register a modal with a function key', () => {
-    const fn = () => 'test'
-    store.register(fn)
-    expect(store.getModalState(fn)).toEqual({
-      props: {},
-      isOpen: false,
-      isMounted: false,
-    })
-  })
-
   it('should register multiple modals', () => {
-    const fn = () => 'test'
     store.register('test')
-    store.register(fn)
+    store.register('test2')
     expect(store.getModalState('test')).toBeDefined()
-    expect(store.getModalState(fn)).toBeDefined()
+    expect(store.getModalState('test2')).toBeDefined()
   })
 
   describe('when calling `subscribe` on store', () => {

@@ -24,7 +24,7 @@ type ModalEntry = {
   promises: ModalPromises
 }
 
-type ModalKey = unknown
+export type ModalKey = string
 
 type ModalsMap = Map<ModalKey, ModalEntry>
 const createDefaultState = (): ModalsMap => new Map()
@@ -85,6 +85,7 @@ export class ModalsStore {
   }
 
   register = (key: ModalKey) => {
+    if (this._map.has(key)) return
     this._map.set(key, createDefaultModalEntry())
   }
 

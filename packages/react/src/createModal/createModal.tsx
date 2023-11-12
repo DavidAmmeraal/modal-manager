@@ -15,10 +15,9 @@ type ResolveFunction<T = undefined> = [T] extends [undefined]
 export type InjectedModalProps<T = undefined> = {
   modal: {
     isOpen: boolean
-    hide: () => void
+    close: () => void
     remove: () => void
     resolve: ResolveFunction<T>
-    cancel: () => void
   }
 }
 
@@ -37,16 +36,15 @@ export function createModal<P extends Record<string, unknown>, U = undefined>(
   return function CreateModalHoc({ id }: CreateModalHocProps) {
     const { state, actions } = useCreatedModal(id)
 
-    if (!state.isMounted) return null
+    if (!state?.isMounted) return null
 
     return (
       <Comp
         {...(state.props as P)}
         modal={{
           isOpen: state.isOpen,
-          hide: actions.hide,
+          close: actions.close,
           remove: actions.remove,
-          cancel: actions.cancel,
           resolve: actions.resolve,
         }}
       />

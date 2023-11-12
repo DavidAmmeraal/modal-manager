@@ -17,12 +17,11 @@ export const ConfirmDialog = createModal<ConfirmDialog>(
   function PersistentModal({
     title,
     content,
-    modal: { isOpen, hide, resolve, cancel },
+    modal: { isOpen, close, resolve, remove },
   }) {
     const finish = (result: boolean) => () => {
       if (result) resolve()
-      else cancel()
-      hide()
+      close()
     }
 
     return (
@@ -31,6 +30,11 @@ export const ConfirmDialog = createModal<ConfirmDialog>(
         onClose={finish(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        TransitionProps={{
+          onExited: () => {
+            remove()
+          },
+        }}
       >
         <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
         <DialogContent>

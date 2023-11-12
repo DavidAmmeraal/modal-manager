@@ -8,10 +8,18 @@ type ComponentsMap = Record<string, ModalComponent>
 
 type PropsAndResult<
   T extends ComponentsMap | undefined,
-  TId extends keyof T,
-> = T[TId] extends ModalComponent<infer P, infer U>
+  TKey extends keyof T | ModalComponent | undefined,
+> = TKey extends keyof T
+  ? T[TKey] extends ModalComponent<infer P, infer U>
+    ? [props: P, result: U]
+    : never
+  : TKey extends ModalComponent<infer P, infer U>
   ? [props: P, result: U]
   : never
+
+type ModalHookOptions = {
+  autoUnmount?: boolean
+}
 
 export class ReactModals<T extends ComponentsMap | undefined = undefined> {
   constructor(
@@ -68,54 +76,43 @@ export class ReactModals<T extends ComponentsMap | undefined = undefined> {
     ) : null
   }
 
-  public useManagedModal = <TId extends keyof T>(
-    id: TId,
-    {
-      autoUnmount = true,
-    }: {
-      /**
-       * If true, the modal will be unmounted when the invoking component is dismounted.
-       */
-      autoUnmount?: boolean
-    } = {},
+  public useManagedModal = <TKey extends keyof T | ModalComponent>(
+    key: TKey,
+    { autoUnmount = true }: ModalHookOptions = {},
   ) => {
-    type ShowProps = PropsAndResult<T, TId>[0]
-    type ResultValue = PropsAndResult<T, TId>[1]
+    type ShowProps = PropsAndResult<T, TKey>[0]
+    type ResultValue = PropsAndResult<T, TKey>[1]
 
-    const show = useCallback(
+    useEffect(() => {
+      if (typeof key !== 'string') {
+        this.store.register(key)
+      }
+    }, [])
+
+    const open = useCallback(
       (props: ShowProps): Promise<ModalResult<ResultValue>> => {
-        return this.store.open(id as string, props) as never
+        return this.store.open(key, props)
       },
-      [id],
+      [key],
     )
+
+    const close = useCallback(() => {
+      return this.store.close(key)
+    }, [key])
 
     useEffect(() => {
       return () => {
         if (autoUnmount) {
-          this.store.remove(id as string)
+          this.store.remove(key)
         }
       }
-    }, [id])
+    }, [key])
 
     return {
-      show,
+      open,
+      close,
     }
   }
-
-  public ReactModalManager = (() => {
-    const store = this.store
-    return {
-      open: <TId extends keyof T>(
-        id: TId,
-        props: PropsAndResult<T, TId>[0],
-      ): Promise<ModalResult<PropsAndResult<T, TId>[1]>> => {
-        return store.open(id as string, props) as never
-      },
-      close: <TId extends keyof T>(id: TId): Promise<void> => {
-        return store.close(id as string) as never
-      },
-    }
-  })()
 }
 
 export function createReactModals<

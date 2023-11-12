@@ -1263,7 +1263,9 @@ __metadata:
   resolution: "@modal-manager/react@workspace:packages/react"
   dependencies:
     "@modal-manager/core": "npm:^0.0.1"
+    "@testing-library/react": "npm:^14.1.0"
     "@types/react": "npm:^18.2.35"
+    "@types/use-sync-external-store": "npm:^0.0.6"
     eslint: "npm:^8.53.0"
     react: "npm:^16.8.0"
     use-sync-external-store: "npm:^1.2.0"
@@ -1732,6 +1734,13 @@ __metadata:
   version: 2.0.3
   resolution: "@types/stack-utils@npm:2.0.3"
   checksum: 1f4658385ae936330581bcb8aa3a066df03867d90281cdf89cc356d404bd6579be0f11902304e1f775d92df22c6dd761d4451c804b0a4fba973e06211e9bd77c
+  languageName: node
+  linkType: hard
+
+"@types/use-sync-external-store@npm:^0.0.6":
+  version: 0.0.6
+  resolution: "@types/use-sync-external-store@npm:0.0.6"
+  checksum: 77c045a98f57488201f678b181cccd042279aff3da34540ad242f893acc52b358bd0a8207a321b8ac09adbcef36e3236944390e2df4fcedb556ce7bb2a88f2a8
   languageName: node
   linkType: hard
 
@@ -4657,7 +4666,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "modal-manager@workspace:."
   dependencies:
-    "@testing-library/react": "npm:^14.1.0"
     "@types/eslint": "npm:^8"
     "@types/jest": "npm:^29.5.8"
     "@types/react": "npm:^18"

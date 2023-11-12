@@ -16,7 +16,8 @@
     "use-sync-external-store": "^1.2.0"
   },
   "devDependencies": {
-    "eslint": "^8.53.0",
-    "@testing-library/react": "^14.1.0"
+    "@testing-library/react": "^14.1.0",
+    "@types/use-sync-external-store": "^0.0.6",
+    "eslint": "^8.53.0"
   }
 }

@@ -1,26 +1,25 @@
-import { useSyncExternalStore, useMemo } from 'react'
+import { useMemo } from 'react'
+import { useSyncExternalStore } from 'use-sync-external-store/shim'
 import { useModalsStore } from '../ModalsStoreProvider'
 
 export function useCreatedModal(id: string) {
   const store = useModalsStore()
 
-  const modalState = useSyncExternalStore(store.subscribe, () =>
-    store.getModalState(id),
+  const modalState = useSyncExternalStore(
+    listener => store.subscribe(id, listener),
+    () => store.getModalState(id),
   )
 
   const actions = useMemo(() => {
     return {
-      hide: () => {
-        store.hide(id)
+      close: () => {
+        store.close(id)
       },
       remove: () => {
         store.remove(id)
       },
       resolve: (value?: unknown) => {
         store.resolve(id, value)
-      },
-      cancel: () => {
-        store.cancel(id)
       },
     }
   }, [id, store])

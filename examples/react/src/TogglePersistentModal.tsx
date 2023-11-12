@@ -1,24 +1,21 @@
 import { Button } from '@mui/material'
-import React from 'react'
 import { useManagedModal } from './modals'
 
 export const TogglePersistentModal = () => {
-  const { show } = useManagedModal('confirm')
-  const [state, setState] = React.useState(1)
+  const { open } = useManagedModal('confirm')
 
-  const handleClick = async () => {
-    const result = await show({
+  const onClick = () => {
+    open({
       title: 'Confirm',
-      content: <>This is a modal that is being displayed here.</>,
+      content: <>Are you sure?</>,
+    }).then(result => {
+      console.log('result', result)
     })
-    if (result.isComplete) {
-      setState(state + 1)
-    }
   }
 
   return (
-    <Button variant="contained" onClick={handleClick}>
-      Toggle drink modal {state}
+    <Button variant="contained" onClick={onClick}>
+      Toggle confirm modal
     </Button>
   )
 }

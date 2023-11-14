@@ -1,12 +1,10 @@
 {
   "name": "@modal-manager/core",
+  "description": "Core library for Modal Manager. Used and bundled by published packages such as @modal-manager/react, not for public use.",
   "version": "0.0.1",
-  "module": "dist/esm/index.js",
-  "main": "dist/cjs/index.js",
+  "main": "src/index.ts",
+  "private": true,
   "scripts": {
-    "compile:cjs": "tsc -p ./tsconfig.build.json --module commonjs --outDir ./dist/cjs",
-    "compile:es": "tsc -p ./tsconfig.build.json --module esnext --outDir ./dist/esm",
-    "compile": "yarn run compile:cjs && yarn run compile:es",
     "lint": "eslint --ext .ts src"
   }
 }

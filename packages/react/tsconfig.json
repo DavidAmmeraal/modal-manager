@@ -1,12 +1,13 @@
 {
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
-		"declaration": true,
     "moduleResolution": "node",
-		"sourceMap": true,
 		"jsx": "react-jsx"
 	},
 	"exclude": [
 		"./dist"
+	],
+	"references": [
+		{ "path": "../core" }
 	]
 }

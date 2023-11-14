@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "build": "yarn workspaces foreach -A --exclude examples/* run build",
+    "lint": "yarn workspaces foreach -A --exclude examples/* run lint",
     "test": "jest"
   },
   "devDependencies": {

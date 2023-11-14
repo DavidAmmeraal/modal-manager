@@ -1,3 +1,4 @@
+import { invariant } from './invariant'
 import { logger } from './log'
 import {
   createCancelledResult,
@@ -37,17 +38,12 @@ const createDefaultModalEntry = (): ModalEntry => ({
   promises: {},
 })
 
-const invariant = <T>(value: T | undefined, msg = 'Invariant violation'): T => {
-  if (!value) throw new Error(msg)
-  return value
-}
-
 export class ModalsStore {
-  private _map: ModalsMap = createDefaultState()
+  private modalsMap: ModalsMap = createDefaultState()
   private listeners: Map<ModalKey, Set<() => void>> = new Map()
 
   #updateModalState(key: ModalKey, fn: (state: ModalState) => ModalState) {
-    const entry = this._map.get(key)
+    const entry = this.modalsMap.get(key)
     if (!entry) return
     const newState = fn(entry.state)
     if (newState !== entry.state) {
@@ -60,7 +56,10 @@ export class ModalsStore {
   }
 
   #getEntry = (key: ModalKey) => {
-    return invariant(this._map.get(key), `No registered modal for key "${key}"`)
+    return invariant(
+      this.modalsMap.get(key),
+      `No registered modal for key "${key}"`,
+    )
   }
 
   #getOpenPromise(key: ModalKey) {
@@ -81,12 +80,12 @@ export class ModalsStore {
   }
 
   getModalState = (key: ModalKey) => {
-    return this._map.get(key)?.state
+    return this.modalsMap.get(key)?.state
   }
 
   register = (key: ModalKey) => {
-    if (this._map.has(key)) return
-    this._map.set(key, createDefaultModalEntry())
+    if (this.modalsMap.has(key)) return
+    this.modalsMap.set(key, createDefaultModalEntry())
   }
 
   open = (key: ModalKey, props: Record<string, unknown>) => {
@@ -142,7 +141,7 @@ export class ModalsStore {
       logger.warn(`Calling resolve on a modal that isn't open: ${key}`)
     }
     promise?.resolve(createCompletedResult(value))
-    delete this._map.get(key)?.promises.open
+    delete this.modalsMap.get(key)?.promises.open
   }
 
   remove = (key: ModalKey) => {
@@ -155,7 +154,7 @@ export class ModalsStore {
     })
     this.#getOpenPromise(key)?.resolve(createCancelledResult())
     this.#getClosePromise(key)?.resolve(undefined)
-    delete this._map.get(key)?.promises.open
-    delete this._map.get(key)?.promises.close
+    delete this.modalsMap.get(key)?.promises.open
+    delete this.modalsMap.get(key)?.promises.close
   }
 }

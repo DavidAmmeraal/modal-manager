@@ -5,7 +5,7 @@ import { Button } from '@mui/material'
 
 function App() {
   const handleClick = async () => {
-    openModal('confirm', { title: 'Confirm', content: 'hi' })
+    await openModal('confirm', { title: 1, content: 'hi' })
   }
 
   return (

@@ -2,7 +2,10 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"outDir": "./dist",
-		"sourceMap": true
+		"sourceMap": true,
+		"module": "ESNext",
+		"declaration": true,
+		"declarationDir": "./dist/types"
 	},
 	"include": [
 		"./src"

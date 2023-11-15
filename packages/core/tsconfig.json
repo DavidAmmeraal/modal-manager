@@ -2,12 +2,11 @@
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
 		"composite": true,
-		"rootDir": "./src",
-		"declaration": true,
     "moduleResolution": "node",
-		"sourceMap": true,
+		"jsx": "react-jsx",
+		"sourceMap": true
 	},
 	"exclude": [
 		"./dist"
-	]
+	],
 }

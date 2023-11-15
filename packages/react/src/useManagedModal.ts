@@ -2,14 +2,15 @@ import { ModalResult } from '@modal-manager/core'
 import { useCallback, useEffect } from 'react'
 import { ModalComponent } from './createModal/createModal'
 import { ReactModalsManager } from './ReactModalManager'
+import { ComponentsMap, PropsAndResult } from './types'
 
 export type ModalHookOptions = {
   autoUnmount?: boolean
 }
 
-export const createUseManagedModal = (manager: ReactModalsManager) => {
-  return function useManagedModal(
-    key: string | ModalComponent,
+export const createUseManagedModal = <T extends ComponentsMap = ComponentsMap>(manager: ReactModalsManager<T>) => {
+  return function useManagedModal<TKey extends keyof T | ModalComponent>(
+    key: TKey,
     { autoUnmount = true }: ModalHookOptions = {},
   ) {
     const usedKey = manager.resolveKey(key as never)
@@ -17,12 +18,12 @@ export const createUseManagedModal = (manager: ReactModalsManager) => {
 
     useEffect(() => {
       if (typeof key !== 'string') {
-        manager.registerModal(usedKey, key)
+        manager.registerModal(usedKey, key as never)
       }
     }, [usedKey])
 
     const open = useCallback(
-      (props: Record<string, unknown>): Promise<ModalResult> => {
+      (props: PropsAndResult<T, TKey>[0]): Promise<ModalResult<PropsAndResult<T, TKey>[1]>> => {
         return store.open(usedKey, props)
       },
       [key],

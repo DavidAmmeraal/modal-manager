@@ -5,6 +5,7 @@ import { ModalComponent } from './createModal/createModal'
 import { createModalsComponent } from './ModalsComponent'
 import { createModalsProvider } from './ModalsProvider'
 import { ReactModalsManager } from './ReactModalManager'
+import { CloseModalFn } from './types'
 import { createUseManagedModal, ModalHookOptions } from './useManagedModal'
 
 type ComponentsMap = Record<string, ModalComponent>
@@ -27,11 +28,7 @@ type OpenModalFn<T extends ComponentsMap> = <
   props: PropsAndResult<T, TKey>[0],
 ) => Promise<ModalResult<PropsAndResult<T, TKey>[1]>>
 
-type CloseModalFn<T extends ComponentsMap> = <
-  TKey extends keyof T | ModalComponent,
->(
-  key: TKey,
-) => void
+
 
 type CreateModalsReturn<T extends ComponentsMap> = {
   ModalsProvider: React.FC<React.PropsWithChildren>
@@ -57,11 +54,11 @@ export function createReactModals<T extends ComponentsMap = ComponentsMap>(
   modalsMap: T,
 ): CreateModalsReturn<T> {
   const store = new ModalsStore()
-  const manager = new ReactModalsManager(store, modalsMap)
+  const manager = new ReactModalsManager<T>(store, modalsMap)
 
   return {
-    openModal: manager.openModal as OpenModalFn<T>,
-    closeModal: manager.closeModal as CloseModalFn<T>,
+    openModal: manager.openModal,
+    closeModal: manager.closeModal,
     ModalsProvider: createModalsProvider(store),
     ModalsComponent: createModalsComponent(manager),
     useManagedModal: createUseManagedModal(manager) as UseManagedModal<T>,

@@ -1,10 +1,11 @@
 import { ModalsStore } from '@modal-manager/core'
 import { generateUUID } from './createId'
 import { ModalComponent } from './createModal/createModal'
+import { CloseModalFn, ComponentsMap, OpenModalFn } from './types'
 
 type Listener = () => void
 
-export class ReactModalsManager {
+export class ReactModalsManager<T extends ComponentsMap = ComponentsMap> {
   private readonly componentKeys: Map<ModalComponent, string>
   private readonly listeners: Set<Listener> = new Set()
 
@@ -66,19 +67,21 @@ export class ReactModalsManager {
     return this
   }
 
-  openModal = (
-    key: string | ModalComponent,
-    props: Record<string, unknown>,
-  ) => {
-    const usedKey = this.resolveKey(key)
+  openModal: OpenModalFn<T> = (key, props) => {
+    const usedKey = this.resolveKey(key as never)
     // If key is a component, we need to register it first. If key already exists, nothing will happen.
     if (typeof key !== 'string') {
-      this.registerModal(usedKey, key)
+      this.registerModal(usedKey, key as never)
     }
     return this.store.open(usedKey, props)
   }
 
-  closeModal = (key: string | ModalComponent) => {
-    return this.store.close(this.resolveKey(key))
+  closeModal: CloseModalFn<T> = (key, options = {}) => {
+    const resolvedKey = this.resolveKey(key as never)
+    const promise = this.store.close(resolvedKey)
+    if (options.remove) {
+      this.store.remove(resolvedKey)
+    }
+    return promise
   }
 }

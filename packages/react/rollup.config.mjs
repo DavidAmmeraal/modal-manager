@@ -8,6 +8,7 @@ export default {
       dir: 'dist/cjs',
       format: 'cjs',
       sourcemap: true,
+
     },
     {
       dir: 'dist/esm',
@@ -23,6 +24,7 @@ export default {
     }),
     typescript({
       tsconfig: './tsconfig.build.json',
+      useTsconfigDeclarationDir: true
     }),
   ],
 }

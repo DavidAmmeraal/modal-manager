@@ -1,2 +1,2 @@
-export { createModal } from './createModal/createModal'
+export { createModal } from './createModal'
 export { createReactModals } from './createReactModals'

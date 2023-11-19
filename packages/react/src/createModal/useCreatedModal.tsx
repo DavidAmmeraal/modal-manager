@@ -18,8 +18,12 @@ export function useCreatedModal(id: string) {
       remove: () => {
         store.remove(id)
       },
-      resolve: (value?: unknown) => {
+      dismiss: () => {
+        store.close(id)
+      },
+      complete: (value: unknown) => {
         store.resolve(id, value)
+        store.close(id)
       },
     }
   }, [id, store])

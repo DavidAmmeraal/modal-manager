@@ -1,4 +1,5 @@
 export default {
   testEnvironment: 'jest-environment-jsdom',
-  setupFilesAfterEnv: ['<rootDir>/setupTests.mjs'],
+  testMatch: ['**/?(*.)+(spec|test).[jt]s?(x)'],
+  setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
 }

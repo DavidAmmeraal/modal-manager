@@ -6,7 +6,7 @@ export interface CreateModalHocProps {
   id: string
 }
 
-type ResolveFunction<T = undefined> = [T] extends [undefined]
+type CompleteFunction<T = undefined> = [T] extends [undefined]
   ? () => void
   : (value: T) => void
 
@@ -16,9 +16,9 @@ type ResolveFunction<T = undefined> = [T] extends [undefined]
 export type InjectedModalProps<T = undefined> = {
   modal: {
     isOpen: boolean
-    close: () => void
+    complete: CompleteFunction<T>
+    dismiss: () => void
     remove: () => void
-    resolve: ResolveFunction<T>
   }
 }
 
@@ -42,9 +42,9 @@ export function createModal<P extends Record<string, any>, U = any>(
           {...(state.props as P)}
           modal={{
             isOpen: state.isOpen,
-            close: actions.close,
             remove: actions.remove,
-            resolve: actions.resolve,
+            complete: actions.complete as CompleteFunction<U>,
+            dismiss: actions.dismiss,
           }}
         />
       )

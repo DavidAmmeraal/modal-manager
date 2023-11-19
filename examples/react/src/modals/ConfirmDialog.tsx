@@ -13,6 +13,8 @@ export type ConfirmDialogProps = {
   content: React.ReactNode
 }
 
+type X = ModalResult<boolean>
+
 export const ConfirmDialog = createModal<ConfirmDialogProps, boolean>(
   function PersistentModal({
     title,

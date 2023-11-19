@@ -5,22 +5,22 @@
  */
 export type ModalResult<T = unknown> =
   | {
-      isCancelled: false
+      isDismissed: false
       isComplete: true
       value: T
     }
   | {
       isComplete: false
-      isCancelled: true
+      isDismissed: true
     }
 
 export const createCompletedResult = <T>(value: T): ModalResult<T> => ({
   isComplete: true,
-  isCancelled: false,
+  isDismissed: false,
   value,
 })
 
 export const createCancelledResult = (): ModalResult => ({
   isComplete: false,
-  isCancelled: true,
+  isDismissed: true,
 })

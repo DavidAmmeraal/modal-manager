@@ -56,21 +56,19 @@ export class ReactModalsManager<T extends ComponentsMap = ComponentsMap> {
   }
 
   public registerModal(key: string, component: ModalComponent) {
-    if (!this.components[key]) {
-      this.components = {
-        ...this.components,
-        [key]: component,
-      }
-      this.store.register(key)
-      this.#emit()
+    this.components = {
+      ...this.components,
+      [key]: component,
     }
+    this.store.register(key)
     return this
   }
 
-  openModal: OpenModalFn<T> = (key, props) => {
+  openModal: OpenModalFn<T> = async (key, props) => {
+    await this.store.closeAnyOpen()
     const usedKey = this.resolveKey(key as never)
     // If key is a component, we need to register it first. If key already exists, nothing will happen.
-    if (typeof key !== 'string') {
+    if (typeof key !== 'string' && !this.components[usedKey]) {
       this.registerModal(usedKey, key as never)
     }
     return this.store.open(usedKey, props)

@@ -17,7 +17,9 @@ export type PropsAndResult<
   ? [props: TKey['props'], result: TKey['resolvedVal']]
   : never
 
-export type OpenModalFn<T extends ComponentsMap = ComponentsMap> = <TKey extends keyof T | ModalComponent>(
+export type OpenModalFn<T extends ComponentsMap = ComponentsMap> = <
+  TKey extends keyof T | ModalComponent,
+>(
   key: TKey,
   props: PropsAndResult<T, TKey>[0],
 ) => Promise<ModalResult<PropsAndResult<T, TKey>[1]>>

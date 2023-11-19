@@ -12,7 +12,7 @@
   "scripts": {
     "build": "yarn workspaces foreach -A --exclude examples/* run build",
     "lint": "yarn workspaces foreach -A --exclude examples/* run lint",
-    "test": "node --experimental-modules node_modules/.bin/jest"
+    "test": "jest --coverage --verbose --runInBand --detectOpenHandles --forceExit"
   },
   "devDependencies": {
     "@babel/core": "^7.23.3",

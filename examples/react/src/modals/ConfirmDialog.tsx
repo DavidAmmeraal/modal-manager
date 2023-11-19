@@ -1,3 +1,4 @@
+import { ModalResult } from '@modal-manager/core'
 import { createModal } from '@modal-manager/react'
 import {
   Button,

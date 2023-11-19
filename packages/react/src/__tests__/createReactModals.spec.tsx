@@ -62,7 +62,7 @@ describe('@modal-manager/react', () => {
   })
 
   describe('when using `ReactModalsManager.openModal` and `closeModal` API', () => {
-    it('should open the modal when `openModal()` is called', () => {
+    it('should open the modal when `openModal()` is called', async () => {
       const { AppWithModal, openModal } = setup()
       render(
         <AppWithModal>
@@ -75,11 +75,11 @@ describe('@modal-manager/react', () => {
       })
 
       expect(
-        screen.getByText('This is the title of the opened modal'),
+        await screen.findByText('This is the title of the opened modal'),
       ).toBeInTheDocument()
     })
 
-    it('should close the modal when `closeModal()` is called', () => {
+    it('should close the modal when `closeModal()` is called', async () => {
       const { AppWithModal, openModal, closeModal } = setup()
       render(
         <AppWithModal>
@@ -92,7 +92,7 @@ describe('@modal-manager/react', () => {
       })
 
       expect(
-        screen.getByText('This is the title of the opened modal'),
+        await screen.findByText('This is the title of the opened modal'),
       ).toBeInTheDocument()
 
       act(() => {
@@ -145,7 +145,7 @@ describe('@modal-manager/react', () => {
 
       await waitFor(() => {
         expect(openPromise).resolves.toStrictEqual({
-          isCancelled: true,
+          isDismissed: true,
           isComplete: false,
         })
 
@@ -181,7 +181,7 @@ describe('@modal-manager/react', () => {
 
         await waitFor(async () =>
           expect(await openPromise).toStrictEqual({
-            isCancelled: false,
+            isDismissed: false,
             isComplete: true,
             value: 'DONT_KNOW',
           }),
@@ -210,10 +210,57 @@ describe('@modal-manager/react', () => {
 
         await waitFor(async () =>
           expect(await openPromise).toStrictEqual({
-            isCancelled: true,
+            isDismissed: true,
             isComplete: false,
           }),
         )
+      })
+    })
+
+    describe('when opening the same modal twice without closing before', () => {
+      it('dismiss the first modal, wait for it to call `remove()`, and show the new modal', async () => {
+        jest.useFakeTimers()
+        const { AppWithModal, openModal } = setup()
+        render(<AppWithModal />)
+
+        let openPromise: Promise<ModalResult>
+        act(() => {
+          openPromise = openModal('test', {
+            title: 'This is the title of the opened modal',
+          })
+        })
+
+        const firstModal = await screen.findByText(
+          'This is the title of the opened modal',
+        )
+        expect(firstModal).toBeInTheDocument()
+
+        act(() => {
+          openModal('test', {
+            title: 'This is the title of the second modal',
+          })
+        })
+
+        expect(firstModal).toBeInTheDocument()
+
+        act(() => {
+          jest.runAllTimers()
+        })
+
+        expect(firstModal).not.toBeInTheDocument()
+
+        expect(
+          await screen.findByText('This is the title of the second modal'),
+        ).toBeInTheDocument()
+
+        jest.useRealTimers()
+
+        await waitFor(() => {
+          expect(openPromise).resolves.toStrictEqual({
+            isDismissed: true,
+            isComplete: false,
+          })
+        })
       })
     })
   })

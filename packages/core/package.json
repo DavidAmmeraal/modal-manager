@@ -1,5 +1,5 @@
 {
-  "name": "@modal-manager/core",
+  "name": "@modalmanager/core",
   "description": "Core library for Modal Manager. Used and bundled by published packages such as @modal-manager/react, not for public use.",
   "version": "0.0.1",
   "main": "src/index.ts",

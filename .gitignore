@@ -13,8 +13,7 @@ coverage
 
 #!.yarn/cache
 .pnp.*
-
-.npmrc
+secrets.env
 
 node_modules
 dist

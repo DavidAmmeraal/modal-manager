@@ -14,7 +14,7 @@
     "build": "pnpm --filter \"!./examples/*\" run build",
     "lint": "pnpm --filter \"!./examples/*\" run lint",
     "test": "jest --coverage --verbose --runInBand --detectOpenHandles --forceExit",
-    "publish": "pnpm run build && dotenv -e secrets.env -- pnpm --filter \"./packages/react\" publish --dry-run"
+    "publish": "pnpm run build && dotenv -e secrets.env -- pnpm --filter \"./packages/react\" publish"
   },
   "devDependencies": {
     "@babel/core": "^7.23.3",

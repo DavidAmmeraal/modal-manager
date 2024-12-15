@@ -14,5 +14,7 @@ coverage
 #!.yarn/cache
 .pnp.*
 
+.npmrc
+
 node_modules
 dist

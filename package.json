@@ -1,6 +1,9 @@
 {
   "name": "modalmanager",
-  "repository": "https://github.com/DavidAmmeraal/modal-manager",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DavidAmmeraal/modal-manager"
+  },
   "version": "0.0.1",
   "type": "module",
   "dependencies": {

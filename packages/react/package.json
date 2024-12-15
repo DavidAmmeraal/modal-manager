@@ -1,6 +1,9 @@
 {
   "name": "@modalmanager/react",
-  "repository": "https://github.com/DavidAmmeraal/modal-manager",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DavidAmmeraal/modal-manager"
+  },
   "version": "0.0.1",
   "module": "dist/esm/index.js",
   "main": "dist/cjs/index.js",

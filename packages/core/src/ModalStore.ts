@@ -1,10 +1,7 @@
 import { invariant } from './invariant'
 import { logger } from './log'
-import {
-  createCancelledResult,
-  createCompletedResult,
-  ModalResult,
-} from './ModalResult'
+import { createCancelledResult, createCompletedResult, ModalResult } from './ModalResult'
+
 import { promiseDelegate, PromiseDelegate } from './promiseDelegate'
 
 type ModalState = {

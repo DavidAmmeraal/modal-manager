@@ -1,6 +1,5 @@
 {
   "name": "modal-manager",
-  "packageManager": "yarn@4.0.1",
   "type": "module",
   "dependencies": {
     "react": "^18.2.0"
@@ -10,8 +9,8 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "yarn workspaces foreach -A --exclude examples/* run build",
-    "lint": "yarn workspaces foreach -A --exclude examples/* run lint",
+    "build": "pnpm --filter \"!./examples/*\" run build",
+    "lint": "pnpm --filter \"!./examples/*\" run lint",
     "test": "jest --coverage --verbose --runInBand --detectOpenHandles --forceExit"
   },
   "devDependencies": {
@@ -37,5 +36,6 @@
   "resolutions": {
     "react": "18.2.0",
     "react-dom": "18.2.0"
-  }
+  },
+  "packageManager": "pnpm@9.12.3+sha512.cce0f9de9c5a7c95bef944169cc5dfe8741abfb145078c0d508b868056848a87c81e626246cb60967cbd7fd29a6c062ef73ff840d96b3c86c40ac92cf4a813ee"
 }

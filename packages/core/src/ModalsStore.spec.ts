@@ -1,6 +1,4 @@
-import { ModalsStore } from './ModalsStore'
-
-
+import { ModalsStore } from './ModalStore'
 
 const setupStore = () => new ModalsStore();
 

@@ -1,4 +1,3 @@
-import { ModalResult } from '@modal-manager/core'
 import { createModal } from '@modal-manager/react'
 import {
   Button,
@@ -14,17 +13,16 @@ export type ConfirmDialogProps = {
   content: React.ReactNode
 }
 
-type X = ModalResult<boolean>
 
 export const ConfirmDialog = createModal<ConfirmDialogProps, boolean>(
   function PersistentModal({
     title,
     content,
-    modal: { isOpen, close, resolve, remove },
+    modal: { isOpen, dismiss, complete, remove },
   }) {
     const finish = (result: boolean) => () => {
-      if (result) resolve(result)
-      close()
+      if (result) complete(result)
+      dismiss()
     }
 
     return (

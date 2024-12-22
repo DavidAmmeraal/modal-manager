@@ -1,32 +1,41 @@
-import { ModalResult } from '@modal-manager/core'
-import { ModalComponent } from './createModal/createModal'
 
-export type ComponentsMap = Record<string, ModalComponent>
-type CloseModalOptions = {
-  remove?: boolean
-}
+import { ModalResult, ModalsStore } from '@davidammeraal/modal-manager-core';
+import { InjectedModalProps } from './createModal';
 
-export type PropsAndResult<
-  T extends ComponentsMap | undefined,
-  TKey extends keyof T | ModalComponent | undefined,
-> = TKey extends keyof T
-  ? T[TKey] extends ModalComponent
-    ? [props: T[TKey]['props'], result: T[TKey]['resolvedVal']]
-    : never
-  : TKey extends ModalComponent
-  ? [props: TKey['props'], result: TKey['resolvedVal']]
-  : never
+export type ModalsMap = Record<string, ModalComponent>;
+export type CloseModalOptions = {
+  /**
+   * If set to true, will immediately unmount the component after it's been closed.
+   */
+  remove?: boolean;
+};
 
-export type OpenModalFn<T extends ComponentsMap = ComponentsMap> = <
-  TKey extends keyof T | ModalComponent,
->(
+export type ModalComponent<
+  T extends Record<string, unknown> | unknown = unknown,
+  U = unknown
+> = {
+  component: React.ComponentType<{ id: string; store: ModalsStore }>;
+  props: T;
+  resolvedVal: U;
+};
+
+export type OpenModalFn<T extends ModalsMap> = <TKey extends keyof T>(
   key: TKey,
-  props: PropsAndResult<T, TKey>[0],
-) => Promise<ModalResult<PropsAndResult<T, TKey>[1]>>
+  ...args: T[TKey]['props'] extends Record<string, unknown>
+    ? [T[TKey]['props']]
+    : []
+) => Promise<ModalResult<T[TKey]['resolvedVal']>>;
 
-export type CloseModalFn<T extends ComponentsMap = ComponentsMap> = <
-  TKey extends keyof T | ModalComponent,
->(
+export type CloseModalFn<T extends ModalsMap> = <TKey extends keyof T>(
   key: TKey,
+  value: T[TKey]['resolvedVal'],
   options?: CloseModalOptions,
-) => Promise<void>
+) => Promise<void>;
+
+export type CancelModalFn<T extends ModalsMap> = <TKey extends keyof T>(
+  key: TKey,
+) => void;
+
+export type CreateModal<P extends Record<string, unknown>, U = unknown> = (
+  Comp: React.ComponentType<P & InjectedModalProps<U>>,
+) => ModalComponent<P, U>;

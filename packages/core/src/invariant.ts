@@ -1,7 +1,14 @@
-export const invariant = <T>(
-  value: T | undefined,
-  msg = 'Invariant violation',
-): T => {
-  if (!value) throw new Error(msg)
-  return value
+/**
+ * Little helper function to ensure conditions are met, or otherwise throws an error.
+ *
+ * @param condition
+ * @param message
+ * @returns
+ */
+export function invariant(
+  condition: unknown,
+  message?: string,
+): asserts condition {
+  if (condition) return;
+  throw new Error(message);
 }

@@ -1,6 +1,5 @@
-import { ModalsComponent, ModalsProvider, openModal } from './modals'
+import { ModalsPortal, openModal } from './modals'
 import './App.css'
-import { TogglePersistentModal } from './TogglePersistentModal'
 import { Button } from '@mui/material'
 
 function App() {
@@ -10,13 +9,10 @@ function App() {
 
   return (
     <div>
-      <ModalsProvider>
-        <TogglePersistentModal />
         <Button variant="contained" onClick={handleClick}>
           Open modal via `openModal`
         </Button>
-        <ModalsComponent />
-      </ModalsProvider>
+        <ModalsPortal/>
     </div>
   )
 }

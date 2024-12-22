@@ -1,5 +1,7 @@
 import { ModalResult } from './ModalResult'
-import { ModalKey, ModalsStore } from './ModalStore'
-import { promiseDelegate } from './promiseDelegate'
+import { ModalKey, ModalsStore, ModalState } from './ModalsStore'
 
-export { ModalsStore, ModalResult, ModalKey, promiseDelegate }
+export { promiseWithResolvers, PromiseWithResolvers } from './promiseWithResolvers';
+export { invariant } from "./invariant";
+
+export { ModalsStore, ModalResult, ModalKey, ModalState }

@@ -1,7 +1,7 @@
 {
   "name": "@davidammeraal/modal-manager-core",
   "description": "Core library for Modal Manager. Used and bundled by published packages such as @modal-manager/react, not for public use.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "src/index.ts",
   "scripts": {
     "lint": "eslint --ext .ts src"

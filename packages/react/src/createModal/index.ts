@@ -1,1 +1,0 @@
-export { createModal } from './createModal'

@@ -1,5 +1,6 @@
 import { createModalsManager } from '@davidammeraal/modal-manager-react'
 import { ConfirmDialog } from './modals/ConfirmDialog'
+import { SimpleModal } from './modals/SimpleModal'
 
 export const {
   openModal,
@@ -8,5 +9,6 @@ export const {
     ModalsPortal
   },
 } = createModalsManager({
+  simple: SimpleModal,
   confirm: ConfirmDialog,
 })

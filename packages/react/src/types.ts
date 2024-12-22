@@ -21,7 +21,8 @@ export type ModalComponent<
 
 export type OpenModalFn<T extends ModalsMap> = <TKey extends keyof T>(
   key: TKey,
-  ...args: T[TKey]['props'] extends Record<string, unknown>
+  ...args: T[TKey]['props'] extends InjectedModalProps<undefined> ? [] :
+  T[TKey]['props'] extends Record<string, unknown>
     ? [T[TKey]['props']]
     : []
 ) => Promise<ModalResult<T[TKey]['resolvedVal']>>;

@@ -40,8 +40,8 @@ export type InjectedModalProps<T = undefined> = {
  *
  * Will inject a `modal` prop into the component that can be used to manage the modal.
  */
-export const createModal = <P extends Record<string, unknown>, U = undefined>(
-  Comp: React.ComponentType<P & InjectedModalProps<U>>,
+export const createModal = <P extends Record<string, unknown> | undefined = undefined, U = undefined>(
+  Comp: P extends undefined ? React.ComponentType<InjectedModalProps> : React.ComponentType<P & InjectedModalProps<U>>,
 ): ModalComponent<P, U> => {
   return {
     component: function CreateModalHoc({ id, store }: CreateModalHocProps) {
@@ -56,14 +56,21 @@ export const createModal = <P extends Record<string, unknown>, U = undefined>(
         },
       ) => actions.complete(value, options);
 
+      const props = {
+        ...state.props,
+        modal: {
+          isOpen: state.isOpen,
+          complete: complete,
+          remove: actions.remove,
+        }
+      }
+
+      const X = Comp as unknown as React.ComponentType<typeof props>;
+
+
       return (
-        <Comp
-          {...(state.props as P)}
-          modal={{
-            isOpen: state.isOpen,
-            complete,
-            remove: actions.remove,
-          }}
+        <X
+          {...props} 
         />
       );
     },

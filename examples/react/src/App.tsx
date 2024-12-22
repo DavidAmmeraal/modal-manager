@@ -7,10 +7,17 @@ function App() {
     await openModal('confirm', { title: 1, content: 'hi' })
   }
 
+  const handleSimpleClick = async () => {
+    await openModal('simple');
+  }
+
   return (
     <div>
         <Button variant="contained" onClick={handleClick}>
-          Open modal via `openModal`
+          Open confirm dialog
+        </Button>
+        <Button variant="contained" onClick={handleSimpleClick}>
+          Open simple modal
         </Button>
         <ModalsPortal/>
     </div>
